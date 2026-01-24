@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 export function Footer() {
   return (
@@ -10,9 +11,7 @@ export function Footer() {
           {/* Company Info */}
           <div className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-accent rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-xl">SC</span>
-              </div>
+              <img src={logo} alt="Sarvan Carbochem Logo" className="h-14 w-auto" />
               <div>
                 <h3 className="font-display font-bold text-xl">Sarvan Carbochem</h3>
                 <p className="text-sm text-primary-foreground/70">LLP</p>
