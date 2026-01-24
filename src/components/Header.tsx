@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, Mail, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 
 const navigation = [
   { name: 'Home', href: '/' },
@@ -59,9 +60,7 @@ export function Header() {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-xl">SC</span>
-              </div>
+              <img src={logo} alt="Sarvan Carbochem Logo" className="h-14 w-auto" />
               <div className="hidden sm:block">
                 <h1 className="font-display font-bold text-xl text-foreground leading-tight">
                   Sarvan Carbochem
