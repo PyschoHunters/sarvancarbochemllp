@@ -1,72 +1,24 @@
-import { ArrowRight, ExternalLink, Globe, Award, Handshake, Building2 } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, Globe, Award, Handshake, Building2, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { PrincipalDetailModal } from '@/components/PrincipalDetailModal';
+import { principals, Principal } from '@/data/principals';
 import principalsHero from '@/assets/principals-hero.jpg';
 
-const principals = [
-  {
-    name: 'Cancarb',
-    country: 'Canada',
-    specialty: 'Thermal Carbon Black',
-    description: 'Cancarb is the only company dedicated to manufacturing Thermal Carbon Black. In addition to standard grades, the company offers specialty thermal blacks such as Stainless and Ultra Pure. The Cancarb plant in Medicine Hat, Alta., Canada has an annual capacity of 100 million pounds or 45,000 metric tons.',
-    highlights: ['Only dedicated thermal carbon black manufacturer', 'Specialty grades available', 'Environmentally responsible with waste heat recovery'],
-  },
-  {
-    name: 'Performance Additives',
-    country: 'Malaysia',
-    specialty: 'Processing Additives for Rubber & Plastics',
-    description: 'Performance Additives Sdn. Bhd. is member of the Behn-Meyer Group for manufacturing specialty chemicals. Their state-of-the-art plant near Kuala Lumpur has capacity to produce 5000 MT per annum of process aids with strong R&D capabilities.',
-    highlights: ['Ultra-Flow™ Range', 'Ultra-Lube™ Range', 'Ultra-Blend™ Homogenising agents'],
-  },
-  {
-    name: 'Advanced Fluoro Tubing',
-    country: 'USA',
-    specialty: 'Fluoropolymer Tubing Solutions',
-    description: 'Leading manufacturer of high-performance fluoropolymer tubing for demanding industrial applications including chemical processing, semiconductor, and medical industries.',
-    highlights: ['PTFE & FEP tubing', 'Chemical resistant', 'High temperature applications'],
-  },
-  {
-    name: 'Herli Technochem',
-    country: 'Germany',
-    specialty: 'Specialty Chemicals',
-    description: 'German precision in specialty chemicals for the rubber and plastics industry, providing innovative solutions for processing and performance enhancement.',
-    highlights: ['German engineering quality', 'Innovative formulations', 'Technical support'],
-  },
-  {
-    name: 'Munch Chemie',
-    country: 'Germany',
-    specialty: 'Release Agents & Process Aids',
-    description: 'Munch Chemie specializes in high-performance release agents and process aids for rubber and plastic molding applications with decades of expertise.',
-    highlights: ['Mold release agents', 'Anti-tack solutions', 'Process optimization'],
-  },
-  {
-    name: 'Nantex',
-    country: 'Taiwan',
-    specialty: 'Synthetic Rubber',
-    description: 'Nantex Industry Co., Ltd. is a leading manufacturer of synthetic rubber products including NBR, SBR, and specialty elastomers for various industrial applications.',
-    highlights: ['NBR rubber', 'SBR variants', 'Specialty elastomers'],
-  },
-  {
-    name: 'Polychromos',
-    country: 'India',
-    specialty: 'Color Masterbatches',
-    description: 'Premium manufacturer of color and additive masterbatches, providing consistent and high-quality coloring solutions for the plastics industry.',
-    highlights: ['Color masterbatches', 'Additive concentrates', 'Custom formulations'],
-  },
-  {
-    name: 'RevoSync',
-    country: 'International',
-    specialty: 'Specialty Polymers',
-    description: 'Global leader in specialty polymer solutions, providing innovative materials for demanding applications across multiple industries.',
-    highlights: ['Specialty polymers', 'Custom solutions', 'Technical expertise'],
-  },
-];
-
 export default function Principals() {
+  const [selectedPrincipal, setSelectedPrincipal] = useState<Principal | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handlePrincipalClick = (principal: Principal) => {
+    setSelectedPrincipal(principal);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-32">
+      <section className="relative py-32 lg:py-40">
         <div className="absolute inset-0">
           <img
             src={principalsHero}
@@ -77,30 +29,33 @@ export default function Principals() {
         </div>
 
         <div className="relative container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground mb-6 animate-fade-up">
+          <div className="section-label mx-auto mb-6 bg-white/10 border-white/20 text-white">
+            <span>Global Partners</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6 animate-fade-up">
             Our Principals
           </h1>
-          <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: '100ms' }}>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto animate-fade-up" style={{ animationDelay: '100ms' }}>
             We proudly represent world-class manufacturers, bringing you the finest quality products from global leaders in the rubber and plastics industry.
           </p>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-card -mt-16 relative z-10 mx-4 lg:mx-auto lg:max-w-5xl rounded-2xl shadow-lg border border-border/50">
+      <section className="py-12 bg-card -mt-16 relative z-10 mx-4 lg:mx-auto lg:max-w-5xl rounded-3xl shadow-xl border border-border/50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
-              { icon: Handshake, value: '8+', label: 'Global Partners' },
+              { icon: Handshake, value: '8', label: 'Global Partners' },
               { icon: Globe, value: '6+', label: 'Countries' },
-              { icon: Award, value: '100+', label: 'Years Combined Expertise' },
+              { icon: Award, value: '100+', label: 'Years Combined' },
               { icon: Building2, value: '50+', label: 'Product Lines' },
             ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="w-12 h-12 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-3">
-                  <stat.icon className="h-6 w-6 text-primary" />
+              <div key={index} className="text-center group">
+                <div className="w-14 h-14 mx-auto bg-primary/10 rounded-2xl flex items-center justify-center mb-3 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                  <stat.icon className="h-7 w-7 text-primary group-hover:text-primary-foreground transition-colors" />
                 </div>
-                <div className="text-2xl md:text-3xl font-display font-bold text-primary">{stat.value}</div>
+                <div className="text-3xl md:text-4xl font-display font-bold text-foreground">{stat.value}</div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>
             ))}
@@ -112,8 +67,8 @@ export default function Principals() {
       <section className="py-24 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 text-primary">
-              <span className="text-sm font-semibold">Trusted Partners</span>
+            <div className="section-label mx-auto">
+              <span>Trusted Partners</span>
             </div>
             
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
@@ -121,58 +76,54 @@ export default function Principals() {
             </h2>
             
             <p className="text-lg text-muted-foreground">
-              Each of our principals is a leader in their respective field, ensuring you receive only the highest quality products backed by technical expertise.
+              Click on any principal to view their complete product range and detailed information.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {principals.map((principal, index) => (
-              <div
-                key={principal.name}
-                className="group bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-border/50"
+              <button
+                key={principal.id}
+                onClick={() => handlePrincipalClick(principal)}
+                className="group text-left premium-card overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 {/* Header */}
                 <div className="bg-gradient-primary p-6">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-2xl font-display font-bold text-primary-foreground mb-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">{principal.flag}</span>
+                        <span className="text-sm text-white/70">{principal.country}</span>
+                      </div>
+                      <h3 className="text-xl font-display font-bold text-white">
                         {principal.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-primary-foreground/80">
-                        <Globe className="h-4 w-4" />
-                        <span className="text-sm">{principal.country}</span>
-                      </div>
                     </div>
-                    <div className="w-12 h-12 bg-primary-foreground/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Building2 className="h-6 w-6 text-primary-foreground" />
+                    <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-secondary group-hover:scale-110 transition-all duration-300">
+                      <ChevronRight className="h-5 w-5 text-white group-hover:text-secondary-foreground transition-colors" />
                     </div>
                   </div>
                 </div>
                 
                 {/* Body */}
                 <div className="p-6 space-y-4">
-                  <div className="inline-flex items-center gap-2 bg-secondary/10 rounded-full px-3 py-1">
+                  <div className="inline-flex items-center gap-2 bg-secondary/10 rounded-full px-3 py-1.5 border border-secondary/20">
                     <span className="text-xs font-semibold text-secondary">{principal.specialty}</span>
                   </div>
                   
-                  <p className="text-muted-foreground leading-relaxed">
-                    {principal.description}
+                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
+                    {principal.shortDescription}
                   </p>
                   
-                  <div className="space-y-2 pt-2">
-                    <p className="text-sm font-semibold text-foreground">Key Offerings:</p>
-                    <ul className="grid gap-2">
-                      {principal.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <div className="w-1.5 h-1.5 bg-secondary rounded-full shrink-0" />
-                          {highlight}
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="pt-2">
+                    <span className="text-sm font-semibold text-primary group-hover:text-secondary transition-colors flex items-center gap-1">
+                      View Details
+                      <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                    </span>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -183,8 +134,8 @@ export default function Principals() {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 text-primary">
-                <span className="text-sm font-semibold">Why Choose Us</span>
+              <div className="section-label">
+                <span>Why Choose Us</span>
               </div>
               
               <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground leading-tight">
@@ -209,7 +160,7 @@ export default function Principals() {
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     </div>
-                    <span className="text-lg text-muted-foreground">{item}</span>
+                    <span className="text-foreground">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -223,16 +174,16 @@ export default function Principals() {
             </div>
 
             <div className="relative">
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-lg">
+              <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
                 <img
                   src={principalsHero}
                   alt="Partnership"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute -bottom-6 -right-6 bg-secondary text-secondary-foreground p-6 rounded-xl shadow-lg">
-                <div className="text-4xl font-display font-bold">8+</div>
-                <div className="text-sm">Global Partners</div>
+              <div className="absolute -bottom-6 -right-6 bg-secondary text-secondary-foreground p-6 rounded-2xl shadow-xl">
+                <div className="text-4xl font-display font-bold">8</div>
+                <div className="text-sm font-medium">Global Partners</div>
               </div>
             </div>
           </div>
@@ -258,6 +209,13 @@ export default function Principals() {
           </div>
         </div>
       </section>
+
+      {/* Principal Detail Modal */}
+      <PrincipalDetailModal
+        principal={selectedPrincipal}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
