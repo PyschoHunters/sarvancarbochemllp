@@ -53,12 +53,6 @@ const productCategories = [
     description: 'High-quality color and additive masterbatches for consistent and efficient production.',
     features: ['Color Masterbatches', 'Additive Masterbatches', 'Custom Solutions'],
   },
-  {
-    icon: Sparkles,
-    name: 'Finished Parts',
-    description: 'Ready-to-use rubber and plastic components manufactured to precise specifications.',
-    features: ['Custom Molded Parts', 'Precision Components', 'Quality Assured'],
-  },
 ];
 
 export default function Products() {
