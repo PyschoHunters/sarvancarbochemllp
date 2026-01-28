@@ -6,65 +6,43 @@ import newsHero from '@/assets/news-hero.jpg';
 const newsArticles = [
   {
     id: 1,
-    category: 'Industry Recognition',
-    title: 'Sarvan Carbochem Listed Among Key Players in Fluoropolymer Masterbatch Market',
-    excerpt: 'According to Verified Market Research analysis, Sarvan Carbochem LLP has been recognized as a key player in the Fluoropolymer Masterbatch Market, projected to reach USD 660 Million by 2030.',
-    date: 'October 2025',
+    category: 'Partnership Announcement',
+    title: 'SARVAN CARBOCHEM LLP is now the Agent of Performance Additives Malaysia',
+    excerpt: 'We are proud to announce our official partnership as the Agent for Performance Additives Sdn Bhd, Malaysia, expanding our portfolio of premium rubber processing additives in India.',
+    date: '2015',
     featured: true,
-    source: 'Verified Market Research',
+    pdfLink: 'https://www.sarvancarbochem.com/pdf/Performance%20Additives%20Sdn%20Bhd_Sarvan%20Carbochem%20LLP.pdf',
   },
   {
     id: 2,
-    category: 'Company Milestone',
-    title: 'Celebrating 10 Years of Excellence in the Indian Market',
-    excerpt: 'Sarvan Carbochem LLP marks its 10th anniversary of serving the Indian Rubber and Plastic Industries with premium quality products and professional service.',
-    date: 'December 2024',
+    category: 'Partnership Announcement',
+    title: 'SARVAN CARBOCHEM LLP is now the Exclusive Sales Agent of Cancarb Ltd, Canada',
+    excerpt: 'We have been appointed as the Exclusive Sales Agent for Cancarb Ltd, Canada - the world\'s leading manufacturer of Thermal Carbon Black, strengthening our position in the Indian market.',
+    date: 'December 2015',
     featured: true,
+    pdfLink: 'https://www.sarvancarbochem.com/pdf/Sarvan%20New%20Sales%20Agent%20for%20India_2_12_15.pdf',
   },
   {
     id: 3,
-    category: 'Expansion',
-    title: 'Enhanced Warehouse Capacity in Ahmedabad',
-    excerpt: 'To better serve our customers in Western India, we have expanded our warehouse facilities in Ahmedabad, ensuring faster delivery and better inventory management.',
-    date: 'September 2024',
-    featured: false,
-  },
-  {
-    id: 4,
-    category: 'Product Launch',
-    title: 'New Ultra-Flow™ Range Now Available',
-    excerpt: 'We are pleased to announce the availability of the complete Ultra-Flow™ range of fatty acid derivatives from Performance Additives, offering superior physical peptization for natural rubber.',
-    date: 'August 2024',
-    featured: false,
-  },
-  {
-    id: 5,
-    category: 'Partnership',
-    title: 'Strengthened Partnership with Cancarb',
-    excerpt: 'Sarvan Carbochem reinforces its partnership with Cancarb, the world\'s leading manufacturer of Thermal Carbon Black, to better serve the Indian market.',
-    date: 'June 2024',
-    featured: false,
-  },
-  {
-    id: 6,
-    category: 'Industry Update',
-    title: 'Growing Demand for Specialty Rubber Additives',
-    excerpt: 'The Indian rubber industry continues to show strong demand for specialty additives, with Sarvan Carbochem positioned to meet these evolving needs with premium products.',
-    date: 'April 2024',
-    featured: false,
+    category: 'Partnership Announcement',
+    title: 'SARVAN CARBOCHEM LLP is now the Exclusive Sales Agent of Munch Chemie International, Germany',
+    excerpt: 'We are honored to represent Munch Chemie International GmbH, Germany as their Exclusive Sales Agent in India, bringing world-class rubber chemicals and additives to the Indian market.',
+    date: '2016',
+    featured: true,
   },
 ];
 
 const milestones = [
-  { year: '2024', event: 'Recognized as key player in Fluoropolymer Masterbatch Market' },
-  { year: '2020', event: 'Expanded product portfolio with new principals' },
+  { year: '2024', event: 'Expanded product portfolio with new global principals' },
+  { year: '2020', event: 'Strengthened partnerships across multiple regions' },
   { year: '2017', event: 'Opened Ahmedabad warehouse for Western India' },
+  { year: '2016', event: 'Appointed Exclusive Agent for Munch Chemie International, Germany' },
+  { year: '2015', event: 'Appointed Exclusive Agent for Cancarb Ltd, Canada & Performance Additives Malaysia' },
   { year: '2014', event: 'Company founded with offices in Chennai and Mumbai' },
+  { year: '1941', event: 'Family legacy in chemicals industry begins' },
 ];
 
 export default function News() {
-  const featuredNews = newsArticles.filter(article => article.featured);
-  const otherNews = newsArticles.filter(article => !article.featured);
 
   return (
     <div className="min-h-screen">
@@ -103,8 +81,8 @@ export default function News() {
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            {featuredNews.map((article) => (
+          <div className="grid md:grid-cols-3 gap-8">
+            {newsArticles.map((article) => (
               <div
                 key={article.id}
                 className="group relative bg-card rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-border/50"
@@ -127,15 +105,9 @@ export default function News() {
                   <div className="flex items-center gap-2 text-muted-foreground text-sm mb-4">
                     <Calendar className="h-4 w-4" />
                     {article.date}
-                    {article.source && (
-                      <>
-                        <span className="mx-2">•</span>
-                        <span>{article.source}</span>
-                      </>
-                    )}
                   </div>
                   
-                  <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
+                  <h3 className="text-xl font-display font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
                     {article.title}
                   </h3>
                   
@@ -143,10 +115,18 @@ export default function News() {
                     {article.excerpt}
                   </p>
 
-                  <button className="inline-flex items-center gap-2 text-primary font-semibold hover:text-primary/80 transition-colors group/btn">
-                    Read More
-                    <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                  </button>
+                  {article.pdfLink && (
+                    <a 
+                      href={article.pdfLink} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors group/btn"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      View Official Letter (PDF)
+                      <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
@@ -154,46 +134,6 @@ export default function News() {
         </div>
       </section>
 
-      {/* All News */}
-      <section className="py-24 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-4 py-2 text-primary">
-              <span className="text-sm font-semibold">Recent Updates</span>
-            </div>
-            
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-foreground">
-              More News & Updates
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {otherNews.map((article) => (
-              <div
-                key={article.id}
-                className="group bg-card rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-border/50"
-              >
-                <div className="inline-flex items-center gap-2 bg-primary/10 rounded-full px-3 py-1 text-xs font-semibold text-primary mb-4">
-                  {article.category}
-                </div>
-                
-                <div className="flex items-center gap-2 text-muted-foreground text-xs mb-3">
-                  <Calendar className="h-3 w-3" />
-                  {article.date}
-                </div>
-                
-                <h3 className="text-lg font-display font-semibold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                  {article.title}
-                </h3>
-                
-                <p className="text-sm text-muted-foreground line-clamp-3">
-                  {article.excerpt}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Timeline Section */}
       <section className="py-24 bg-background">
