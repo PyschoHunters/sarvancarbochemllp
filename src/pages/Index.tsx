@@ -14,7 +14,7 @@ const products = [
   { name: 'Products for Plastics', description: 'Specialized additives for plastic applications' },
   { name: 'Specialty Chemicals', description: 'Custom chemical solutions for unique needs' },
   { name: 'Specialty Masterbatches', description: 'Color and additive masterbatches' },
-  { name: 'Finished Parts', description: 'Ready-to-use rubber and plastic components' },
+  
 ];
 
 const stats = [
@@ -44,7 +44,7 @@ export default function Index() {
           <div className="max-w-3xl space-y-8 animate-fade-up">
             <div className="inline-flex items-center gap-2 bg-secondary/20 backdrop-blur-sm rounded-full px-4 py-2 text-secondary">
               <span className="w-2 h-2 bg-secondary rounded-full animate-pulse" />
-              <span className="text-sm font-medium">Trusted Since 2014</span>
+              <span className="text-sm font-medium">Trusted since 2014, backed by a legacy since 1941</span>
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-bold text-primary-foreground leading-tight">

@@ -1,4 +1,4 @@
-import { ArrowRight, Factory, Beaker, Layers, Sparkles, Droplet, Box, FlaskConical, Palette, Cog } from 'lucide-react';
+import { ArrowRight, Factory, Beaker, Layers, Droplet, Box, FlaskConical, Palette, Cog } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import productsImage from '@/assets/products-bg.jpg';
@@ -52,12 +52,6 @@ const productCategories = [
     name: 'Specialty Masterbatches',
     description: 'High-quality color and additive masterbatches for consistent and efficient production.',
     features: ['Color Masterbatches', 'Additive Masterbatches', 'Custom Solutions'],
-  },
-  {
-    icon: Sparkles,
-    name: 'Finished Parts',
-    description: 'Ready-to-use rubber and plastic components manufactured to precise specifications.',
-    features: ['Custom Molded Parts', 'Precision Components', 'Quality Assured'],
   },
 ];
 
