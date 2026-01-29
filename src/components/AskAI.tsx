@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Sparkles, ChevronDown, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 
 interface Message {
@@ -9,107 +8,148 @@ interface Message {
   content: string;
 }
 
-const FAQ_DATA: Record<string, string> = {
-  // Founding & History
-  'who founded sarvan': 'Sarvan Carbochem LLP was founded by Mr. V. Suresh in 2014, backed by a family legacy in the rubber and chemical industry dating back to 1941.',
-  'when was sarvan founded': 'Sarvan Carbochem LLP was established in 2014. However, our family legacy in the rubber and chemical industry dates back to 1941.',
-  'year started': 'Sarvan Carbochem LLP was established in 2014, with a family legacy dating back to 1941.',
-  'history': 'Sarvan Carbochem LLP was founded in 2014 by Mr. V. Suresh. We are backed by a rich family legacy in the rubber and chemical industry that began in 1941. Today, we are a leading supplier of specialty chemicals, polymers, and rubber additives across India.',
-  'legacy': 'Our legacy dates back to 1941 when our family first entered the rubber and chemical industry. Sarvan Carbochem LLP was formally established in 2014, carrying forward this rich heritage.',
-  
-  // Principals
-  'principals': 'Our esteemed principals include:\n\n• **Cancarb Ltd** (Canada) - Thermal Carbon Black\n• **Performance Additives** (Malaysia) - EPDM Rubber\n• **Munch Chemie** (Germany) - Rubber Chemicals\n• **Nantex Industry** (Taiwan) - Synthetic Rubber\n• **Polychromos** (India) - Pigments & Dyes\n• **Advanced Fluoro Tubes** (India) - PTFE Products\n• **RevoSync** (Germany) - Synchronizer Rings\n• **Herli Technochem** (Germany) - Specialty Chemicals',
-  'partners': 'We represent 8 global principals including Cancarb (Canada), Performance Additives (Malaysia), Munch Chemie (Germany), Nantex (Taiwan), Polychromos (India), Advanced Fluoro Tubes (India), RevoSync (Germany), and Herli Technochem (Germany).',
-  'cancarb': 'Cancarb Ltd is a Canadian company and world leader in Thermal Carbon Black (Thermax®). We are their exclusive sales agent for India since 2015.',
-  'performance additives': 'Performance Additives Sdn Bhd (Malaysia) specializes in EPDM Rubber products. We became their agent in 2016.',
-  'munch': 'Munch Chemie International GmbH (Germany) manufactures specialty rubber chemicals. We are their exclusive sales agent for India.',
-  'nantex': 'Nantex Industry Co., Ltd. (Taiwan) produces synthetic rubber including NBR, SBR, and specialty polymers.',
-  
-  // Products
-  'products': 'We supply a comprehensive range of specialty chemicals including:\n\n• Carbon Black (Thermal & Specialty)\n• Synthetic Rubber (NBR, SBR, EPDM)\n• Rubber Chemicals & Additives\n• Fluoropolymers & PTFE\n• Pigments & Dyes\n• Industrial Chemicals\n• Synchronizer Rings (Automotive)\n• Specialty Polymers',
-  'what do you sell': 'We are suppliers of specialty chemicals, polymers, rubber additives, carbon black, fluoropolymers, pigments, and industrial chemicals for various industries including automotive, rubber, plastics, and manufacturing.',
-  
-  // Contact & Location
-  'contact': 'You can reach us at:\n\n📧 Email: sales@sarvancarbochem.com\n📞 Phone: +91 44 26872203\n📍 Offices: Chennai & Mumbai, India',
-  'location': 'We have offices in Chennai and Mumbai, India. Our headquarters is located in Chennai.',
-  'email': 'You can email us at sales@sarvancarbochem.com',
-  'phone': 'You can call us at +91 44 26872203',
-  
-  // About
-  'about': 'Sarvan Carbochem LLP is a leading supplier of specialty chemicals, polymers, and rubber additives in India. Founded in 2014 with a legacy dating back to 1941, we represent 8 global principals and serve industries including automotive, rubber, plastics, and manufacturing.',
-  'what is sarvan': 'Sarvan Carbochem LLP is a premier specialty chemicals trading company based in India. We are exclusive agents for leading global manufacturers, supplying high-quality chemicals, polymers, and additives to various industries.',
-  
-  // Industries
-  'industries': 'We serve multiple industries including:\n\n• Automotive\n• Rubber Manufacturing\n• Plastics & Polymers\n• Paints & Coatings\n• Textiles\n• Pharmaceuticals\n• General Manufacturing',
-};
-
-const SUGGESTED_QUESTIONS = [
-  'Who founded Sarvan?',
-  'Who are your principals?',
-  'What products do you sell?',
-  'How can I contact you?',
-];
-
-function findAnswer(question: string): string {
-  const lowerQuestion = question.toLowerCase().trim();
-  
-  // Direct keyword matching
-  for (const [key, value] of Object.entries(FAQ_DATA)) {
-    if (lowerQuestion.includes(key)) {
-      return value;
-    }
-  }
-  
-  // Fuzzy matching for common patterns
-  if (lowerQuestion.includes('founder') || lowerQuestion.includes('start') || lowerQuestion.includes('begin')) {
-    return FAQ_DATA['who founded sarvan'];
-  }
-  if (lowerQuestion.includes('principal') || lowerQuestion.includes('partner') || lowerQuestion.includes('represent')) {
-    return FAQ_DATA['principals'];
-  }
-  if (lowerQuestion.includes('product') || lowerQuestion.includes('sell') || lowerQuestion.includes('offer') || lowerQuestion.includes('supply')) {
-    return FAQ_DATA['products'];
-  }
-  if (lowerQuestion.includes('contact') || lowerQuestion.includes('reach') || lowerQuestion.includes('call') || lowerQuestion.includes('email')) {
-    return FAQ_DATA['contact'];
-  }
-  if (lowerQuestion.includes('where') || lowerQuestion.includes('location') || lowerQuestion.includes('office') || lowerQuestion.includes('address')) {
-    return FAQ_DATA['location'];
-  }
-  if (lowerQuestion.includes('about') || lowerQuestion.includes('what is') || lowerQuestion.includes('who is') || lowerQuestion.includes('tell me')) {
-    return FAQ_DATA['about'];
-  }
-  if (lowerQuestion.includes('industry') || lowerQuestion.includes('sector') || lowerQuestion.includes('serve')) {
-    return FAQ_DATA['industries'];
-  }
-  if (lowerQuestion.includes('year') || lowerQuestion.includes('when') || lowerQuestion.includes('established')) {
-    return FAQ_DATA['when was sarvan founded'];
-  }
-  if (lowerQuestion.includes('legacy') || lowerQuestion.includes('1941') || lowerQuestion.includes('history')) {
-    return FAQ_DATA['legacy'];
-  }
-  
-  return "I'm sorry, I don't have specific information about that. Please try asking about our principals, products, history, or contact details. You can also reach us directly at sales@sarvancarbochem.com for more detailed inquiries.";
+interface FAQ {
+  question: string;
+  answer: string;
 }
+
+// Verified FAQs from sarvancarbochem.com
+const FAQS: FAQ[] = [
+  {
+    question: "Who are the founders of Sarvan Carbochem?",
+    answer: "Sarvan Carbochem LLP was founded by Mr. A Jai Venkkatesh and Mr. Karthi Sankar, who are the Managing Partners of the company."
+  },
+  {
+    question: "When was Sarvan Carbochem established?",
+    answer: "Sarvan Carbochem LLP was established in December 2014."
+  },
+  {
+    question: "Where are your offices located?",
+    answer: "We have offices in Mumbai and Chennai, with warehouses in Chennai and Ahmedabad.\n\n**Chennai (Registered Office):**\nH09, Central Avenue, Korattur, Chennai – 600 080, Tamil Nadu\nPhone: +91 44 26872203 / 25342046\n\n**Mumbai Office:**\nNo. 424, Shiv Centre, Plot No. 72, D.B.C, Sector – 17, Vashi, Navi Mumbai – 400 705\nPhone: +91 22 2766 48 66 / 77"
+  },
+  {
+    question: "What is your email address?",
+    answer: "You can reach us at sales@sarvancarbochem.com"
+  },
+  {
+    question: "What is your LLP Identification Number?",
+    answer: "Our LLP Identification Number is AAD-0296"
+  },
+  {
+    question: "What products does Sarvan Carbochem offer?",
+    answer: "We offer a wide range of products including:\n• Polymers\n• Fillers\n• Processing Additives\n• Release Agents\n• Coupling Agents\n• Products for Plastics\n• Specialty Chemicals\n• Specialty Masterbatches"
+  },
+  {
+    question: "What industries do you serve?",
+    answer: "We serve the Indian Rubber and Plastic Industries with technical marketing of Synthetic Rubbers and Rubber and Plastic Additives."
+  },
+  {
+    question: "Who are your principals/partners?",
+    answer: "Our esteemed principals include:\n• Cancarb Ltd (Canada) - Thermal Carbon Black\n• Performance Additives (Malaysia) - EPDM Rubber\n• Munch Chemie International (Germany) - Rubber Chemicals\n• Nantex Industry (Taiwan) - Synthetic Rubber\n• Polychromos (India) - Pigments & Dyes\n• Advanced Fluoro Tubes (India) - PTFE Products\n• RevoSync (Germany) - Synchronizer Rings\n• Herli Technochem (Germany) - Specialty Chemicals"
+  },
+  {
+    question: "What is special about your team?",
+    answer: "Our company has the able support of competent senior team members having more than 100 years of combined experience among themselves. Professionalism is always the utmost important aspect within our organization."
+  },
+  {
+    question: "How can I contact you?",
+    answer: "You can reach us at:\n\n📧 Email: sales@sarvancarbochem.com\n📞 Chennai: +91 44 26872203 / 25342046\n📞 Mumbai: +91 22 2766 48 66 / 77\n\nOr visit our Contact page for more details."
+  }
+];
 
 export function AskAI() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: "Hello! I'm Sarvan's AI assistant. I can help you with questions about our company, principals, products, and more. What would you like to know?"
+      content: "Hello! I'm here to help you learn about Sarvan Carbochem LLP. Please select a question from the dropdown below, or type your own question."
     }
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const handleSend = async (question?: string) => {
-    const messageText = question || input.trim();
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const findAnswer = (question: string): string | null => {
+    const lowerQuestion = question.toLowerCase().trim();
+    
+    for (const faq of FAQS) {
+      const faqLower = faq.question.toLowerCase();
+      // Check for keyword matches
+      const keywords = faqLower.split(' ').filter(w => w.length > 3);
+      const matchCount = keywords.filter(kw => lowerQuestion.includes(kw)).length;
+      
+      if (matchCount >= 2 || lowerQuestion.includes(faqLower.slice(0, 20))) {
+        return faq.answer;
+      }
+    }
+    
+    // Specific keyword matching
+    if (lowerQuestion.includes('founder') || lowerQuestion.includes('who started') || lowerQuestion.includes('who created')) {
+      return FAQS[0].answer;
+    }
+    if (lowerQuestion.includes('when') && (lowerQuestion.includes('start') || lowerQuestion.includes('establish') || lowerQuestion.includes('founded'))) {
+      return FAQS[1].answer;
+    }
+    if (lowerQuestion.includes('office') || lowerQuestion.includes('location') || lowerQuestion.includes('address') || lowerQuestion.includes('where')) {
+      return FAQS[2].answer;
+    }
+    if (lowerQuestion.includes('email')) {
+      return FAQS[3].answer;
+    }
+    if (lowerQuestion.includes('llp') || lowerQuestion.includes('identification') || lowerQuestion.includes('registration')) {
+      return FAQS[4].answer;
+    }
+    if (lowerQuestion.includes('product') || lowerQuestion.includes('sell') || lowerQuestion.includes('offer')) {
+      return FAQS[5].answer;
+    }
+    if (lowerQuestion.includes('industry') || lowerQuestion.includes('sector') || lowerQuestion.includes('serve')) {
+      return FAQS[6].answer;
+    }
+    if (lowerQuestion.includes('principal') || lowerQuestion.includes('partner') || lowerQuestion.includes('represent')) {
+      return FAQS[7].answer;
+    }
+    if (lowerQuestion.includes('team') || lowerQuestion.includes('experience')) {
+      return FAQS[8].answer;
+    }
+    if (lowerQuestion.includes('contact') || lowerQuestion.includes('phone') || lowerQuestion.includes('call') || lowerQuestion.includes('reach')) {
+      return FAQS[9].answer;
+    }
+    
+    return null;
+  };
+
+  const handleSelectFAQ = async (faq: FAQ) => {
+    setShowDropdown(false);
+    
+    const userMessage: Message = { role: 'user', content: faq.question };
+    setMessages(prev => [...prev, userMessage]);
+    setIsTyping(true);
+
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    const assistantMessage: Message = { role: 'assistant', content: faq.answer };
+    setIsTyping(false);
+    setMessages(prev => [...prev, assistantMessage]);
+  };
+
+  const handleSend = async () => {
+    const messageText = input.trim();
     if (!messageText) return;
 
     const userMessage: Message = { role: 'user', content: messageText };
@@ -117,11 +157,14 @@ export function AskAI() {
     setInput('');
     setIsTyping(true);
 
-    // Simulate typing delay for natural feel
-    await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 500));
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     const answer = findAnswer(messageText);
-    const assistantMessage: Message = { role: 'assistant', content: answer };
+    
+    const assistantMessage: Message = { 
+      role: 'assistant', 
+      content: answer || "I don't have specific information about that in my knowledge base. For detailed assistance, please contact us at **sales@sarvancarbochem.com** — we will be happy to assist you!\n\nYou can also select from the frequently asked questions in the dropdown above."
+    };
     
     setIsTyping(false);
     setMessages(prev => [...prev, assistantMessage]);
@@ -156,7 +199,7 @@ export function AskAI() {
       {/* Chat Window */}
       <div
         className={cn(
-          "fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)]",
+          "fixed bottom-6 right-6 z-50 w-[400px] max-w-[calc(100vw-48px)]",
           "bg-card border border-border rounded-2xl shadow-2xl",
           "transition-all duration-300 transform origin-bottom-right",
           isOpen 
@@ -172,7 +215,7 @@ export function AskAI() {
             </div>
             <div>
               <h3 className="font-semibold text-foreground text-sm">Sarvan AI Assistant</h3>
-              <p className="text-xs text-muted-foreground">Ask about our company</p>
+              <p className="text-xs text-muted-foreground">Frequently Asked Questions</p>
             </div>
           </div>
           <button
@@ -183,8 +226,53 @@ export function AskAI() {
           </button>
         </div>
 
+        {/* FAQ Dropdown */}
+        <div className="p-3 border-b border-border bg-muted/30" ref={dropdownRef}>
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className={cn(
+                "w-full flex items-center justify-between px-4 py-3 rounded-xl",
+                "bg-card border border-border hover:border-primary/50",
+                "text-sm font-medium text-foreground",
+                "transition-all duration-200",
+                showDropdown && "border-primary ring-2 ring-primary/20"
+              )}
+            >
+              <span className="flex items-center gap-2">
+                <HelpCircle className="h-4 w-4 text-primary" />
+                Select a frequently asked question
+              </span>
+              <ChevronDown className={cn(
+                "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                showDropdown && "rotate-180"
+              )} />
+            </button>
+            
+            {/* Dropdown Menu */}
+            {showDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-2 z-[100] bg-card border border-border rounded-xl shadow-xl max-h-[250px] overflow-y-auto">
+                {FAQS.map((faq, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSelectFAQ(faq)}
+                    className={cn(
+                      "w-full text-left px-4 py-3 text-sm",
+                      "hover:bg-primary/10 transition-colors",
+                      "border-b border-border/50 last:border-b-0",
+                      "text-foreground hover:text-primary"
+                    )}
+                  >
+                    {faq.question}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Messages */}
-        <div className="h-[320px] overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-background to-muted/20">
+        <div className="h-[280px] overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-background to-muted/20">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -236,43 +324,28 @@ export function AskAI() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Suggested Questions */}
-        {messages.length === 1 && (
-          <div className="px-4 pb-2">
-            <p className="text-xs text-muted-foreground mb-2">Quick questions:</p>
-            <div className="flex flex-wrap gap-1.5">
-              {SUGGESTED_QUESTIONS.map((q, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleSend(q)}
-                  className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Input */}
         <div className="p-4 border-t border-border bg-card rounded-b-2xl">
           <div className="flex gap-2">
-            <Input
+            <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask a question..."
-              className="flex-1 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary/50 rounded-full px-4"
+              placeholder="Or type your question..."
+              className="flex-1 bg-muted/50 border-0 focus:ring-1 focus:ring-primary/50 rounded-full px-4 py-2.5 text-sm outline-none"
             />
             <Button
-              onClick={() => handleSend()}
+              onClick={handleSend}
               size="icon"
-              className="rounded-full bg-primary hover:bg-primary/90 shadow-md"
+              className="rounded-full bg-primary hover:bg-primary/90 shadow-md h-10 w-10"
               disabled={!input.trim() || isTyping}
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          <p className="text-xs text-muted-foreground text-center mt-2">
+            Can't find your answer? Email us at sales@sarvancarbochem.com
+          </p>
         </div>
       </div>
     </>
