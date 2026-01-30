@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import heroImage from '@/assets/hero-industrial.jpg';
 
 const contactInfo = [
@@ -28,6 +29,13 @@ const contactInfo = [
   },
 ];
 
+interface FormErrors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  message?: string;
+}
+
 export default function Contact() {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -36,27 +44,121 @@ export default function Contact() {
     phone: '',
     company: '',
     message: '',
+    honeypot: '', // Honeypot field for spam protection
   });
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Validation functions
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && email.length <= 255;
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    if (!phone) return true; // Optional field
+    const phoneRegex = /^[\d\s\+\-\(\)\.]{0,20}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    } else if (formData.name.length > 100) {
+      newErrors.name = 'Name must be less than 100 characters';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (formData.phone && !validatePhone(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (formData.message.length > 5000) {
+      newErrors.message = 'Message must be less than 5000 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please check the form for errors.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll get back to you soon.",
-    });
-    
-    setFormData({ name: '', email: '', phone: '', company: '', message: '' });
-    setIsSubmitting(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('contact-form', {
+        body: {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim() || undefined,
+          company: formData.company.trim() || undefined,
+          message: formData.message.trim(),
+          honeypot: formData.honeypot, // Include honeypot
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to send message');
+      }
+
+      if (data?.success) {
+        toast({
+          title: "Message Sent! ✓",
+          description: "Thank you for contacting us. We'll get back to you within 24-48 hours.",
+        });
+        setFormData({ name: '', email: '', phone: '', company: '', message: '', honeypot: '' });
+        setErrors({});
+      } else {
+        throw new Error(data?.error || 'Failed to send message');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
+      
+      if (errorMessage.includes('Too many')) {
+        toast({
+          title: "Rate Limit Exceeded",
+          description: "You've submitted too many messages. Please try again in 15 minutes.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error Sending Message",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   return (
@@ -98,6 +200,17 @@ export default function Contact() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot field - hidden from users, visible to bots */}
+                <div className="absolute opacity-0 pointer-events-none" aria-hidden="true">
+                  <Input
+                    name="honeypot"
+                    value={formData.honeypot}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -107,10 +220,13 @@ export default function Contact() {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      required
                       placeholder="John Doe"
-                      className="h-12"
+                      className={`h-12 ${errors.name ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      maxLength={100}
                     />
+                    {errors.name && (
+                      <p className="text-sm text-destructive mt-1">{errors.name}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -121,10 +237,13 @@ export default function Contact() {
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      required
                       placeholder="john@company.com"
-                      className="h-12"
+                      className={`h-12 ${errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      maxLength={255}
                     />
+                    {errors.email && (
+                      <p className="text-sm text-destructive mt-1">{errors.email}</p>
+                    )}
                   </div>
                 </div>
 
@@ -139,8 +258,12 @@ export default function Contact() {
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="+91 98765 43210"
-                      className="h-12"
+                      className={`h-12 ${errors.phone ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                      maxLength={20}
                     />
+                    {errors.phone && (
+                      <p className="text-sm text-destructive mt-1">{errors.phone}</p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">
@@ -152,6 +275,7 @@ export default function Contact() {
                       onChange={handleChange}
                       placeholder="Your Company"
                       className="h-12"
+                      maxLength={200}
                     />
                   </div>
                 </div>
@@ -164,11 +288,21 @@ export default function Contact() {
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    required
                     placeholder="Tell us about your requirements..."
                     rows={5}
-                    className="resize-none"
+                    className={`resize-none ${errors.message ? 'border-destructive focus-visible:ring-destructive' : ''}`}
+                    maxLength={5000}
                   />
+                  <div className="flex justify-between items-center mt-1">
+                    {errors.message ? (
+                      <p className="text-sm text-destructive">{errors.message}</p>
+                    ) : (
+                      <span />
+                    )}
+                    <span className="text-xs text-muted-foreground">
+                      {formData.message.length}/5000
+                    </span>
+                  </div>
                 </div>
 
                 <Button
@@ -178,9 +312,22 @@ export default function Contact() {
                   className="w-full group"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                  <Send className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <Send className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </Button>
+
+                <p className="text-xs text-muted-foreground text-center">
+                  By submitting this form, you agree to our privacy policy. We'll respond within 24-48 business hours.
+                </p>
               </form>
             </div>
 
